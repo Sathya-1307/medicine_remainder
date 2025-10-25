@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('https://images.pexels.com/photos/139398/thermometer-headache-pain-pills-139398.jpeg?cs=srgb&dl=pexels-pixabay-139398.jpg&fm=jpg') center/cover no-repeat fixed;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(102, 126, 234, 0.7);
+      z-index: -1;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    h2 {
+      color: #667eea;
+      font-size: 2.5em;
+      margin-bottom: 30px;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      padding: 12px 30px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 30px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .nav-links a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    .med-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 20px;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .med-table th, .med-table td {
+      padding: 16px;
+      text-align: left;
+    }
+
+    .med-table th {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9em;
+    }
+
+    .med-table tbody tr {
+      background: white;
+      transition: all 0.3s ease;
+    }
+
+    .med-table tbody tr:nth-child(even) {
+      background: #f8f9ff;
+    }
+
+    .med-table tbody tr:hover {
+      background: #e8ebff;
+      transform: scale(1.01);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+
+    .med-table td {
+      border-bottom: 1px solid #e0e0e0;
+      color: #333;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85em;
+      text-transform: uppercase;
+    }
+
+    .action-btn {
+      padding: 8px 16px;
+      margin-right: 8px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 0.9em;
+    }
+
+    .edit-btn { 
+      background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+      box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+    }
+
+    .edit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.5);
+    }
+
+    .delete-btn { 
+      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+      box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+    }
+
+    .delete-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(244, 67, 54, 0.5);
+    }
+
+    #enable-sound {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+      transition: all 0.3s ease;
+      font-size: 1em;
+    }
+
+    #enable-sound:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .empty-state-icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      h2 {
+        font-size: 1.8em;
+      }
+
+      .med-table {
+        font-size: 0.9em;
+      }
+
+      .med-table th, .med-table td {
+        padding: 10px;
+      }
+
+      .action-btn {
+        padding: 6px 12px;
+        font-size: 0.85em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>💊 Your Medicine Schedule</h2>
+    
+    <div class="nav-links">
+      <a href="/add">➕ Add Medicine</a>
+      <a href="/logout">🚪 Logout</a>
+    </div>
+
+    <table class="med-table">
+      <thead>
+        <tr>
+          <th>Medicine Name</th>
+          <th>Dosage</th>
+          <th>Time</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in meds %}
+        <tr>
+          <td><strong>{{ m.name }}</strong></td>
+          <td>{{ m.dosage }}</td>
+          <td>{{ m.time }}</td>
+          <td><span class="status-badge">{{ m.status }}</span></td>
+          <td>
+            <a href="{{ url_for('add', edit_id=m.id) }}" class="action-btn edit-btn">✏️ Edit</a>
+            <button class="action-btn delete-btn" onclick="deleteMedicine('{{ m.id }}')">🗑️ Delete</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Persistent audio element -->
+  <audio id="alarm" src="{{ url_for('static', filename='alarm.mp3') }}" loop></audio>
+
+  <!-- Enable Alarm Button -->
+  <button id="enable-sound">
+    Enable Alarm Sound 🔔
+  </button>
+
+<script>
+if (Notification.permission !== "granted") {
+    Notification.requestPermission();
+}
+
+const alarmAudio = document.getElementById("alarm");
+let userInteracted = false;
+
+// Enable alarm button
+document.getElementById("enable-sound").addEventListener("click", () => {
+    userInteracted = true;
+    alarmAudio.play().then(() => {
+        alarmAudio.pause();
+        alert("Alarm sound enabled!");
+        document.getElementById("enable-sound").style.display = "none";
+    }).catch(e => console.log("Audio play blocked:", e));
+});
+
+// Detect any click to allow sound
+document.addEventListener("click", () => { userInteracted = true; });
+
+// Delete medicine function
+function deleteMedicine(id) {
+    id = parseInt(id);
+    if(confirm("Are you sure you want to delete this medicine?")) {
+        fetch("/delete_medicine/" + id, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success){
+                window.location.reload();
+            } else {
+                alert("Failed to delete medicine.");
+            }
+        });
+    }
+}
+
+// Reminder logic
+async function checkReminders() {
+    const response = await fetch("/check_reminder");
+    const meds = await response.json();
+
+    meds.forEach(med => {
+        let responded = false;
+
+        if (Notification.permission === "granted") {
+            let notification = new Notification("Medicine Reminder", {
+                body: med.name + " - " + med.dosage,
+                requireInteraction: true
+            });
+
+            if (userInteracted) {
+                alarmAudio.currentTime = 0;
+                alarmAudio.play().catch(e => console.log("Audio play blocked:", e));
+            }
+
+            notification.onclick = async function() {
+                responded = true;
+                alarmAudio.pause();
+                await fetch("/mark_taken/" + med.id, { method: "POST" });
+                window.location.reload();
+                notification.close();
+            };
+
+            setTimeout(async function() {
+                if (!responded) {
+                    alarmAudio.pause();
+                    await fetch("/update_status/" + med.id + "/Missed");
+                    window.location.reload();
+                    notification.close();
+                }
+            }, 60000);
+        }
+    });
+}
+
+checkReminders();
+setInterval(checkReminders, 30000);
+</script>
+</body>
+</html>

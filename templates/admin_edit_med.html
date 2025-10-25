@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Medicine - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Medicine for {{ user.email }}</h1>
+        <form method="POST">
+            <label>Name:</label>
+            <input type="text" name="name" value="{{ med.name }}" required>
+
+            <label>Dosage:</label>
+            <input type="text" name="dosage" value="{{ med.dosage }}">
+
+            <label>Time (HH:MM):</label>
+            <input type="time" name="time" value="{{ med.time }}">
+
+            <label>Start Date:</label>
+            <input type="date" name="start" value="{{ med.start_date }}">
+
+            <label>End Date:</label>
+            <input type="date" name="end" value="{{ med.end_date }}">
+
+            <label>Status:</label>
+            <select name="status">
+                <option value="Pending" {% if med.status=='Pending' %}selected{% endif %}>Pending</option>
+                <option value="Taken" {% if med.status=='Taken' %}selected{% endif %}>Taken</option>
+            </select>
+
+            <button type="submit">Update Medicine</button>
+        </form>
+        <a href="{{ url_for('admin_user', user_id=user.id) }}" class="back-btn">Back</a>
+    </div>
+</body>
+</html>
